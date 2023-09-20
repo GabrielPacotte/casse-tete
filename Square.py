@@ -28,10 +28,8 @@ class Square:
         #return str(self.getSides())
         return str(self.id)
 
-    def copy(self):
-        copy = Square(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1])
-        copy.face = self.face
-        return copy
+    def __copy__(self):
+        return type(self)(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1])
 
     def getId(self):
         return self.id

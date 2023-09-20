@@ -1,5 +1,6 @@
 from Square import Square
 from Utility import reverseBits
+from copy import deepcopy
 
 lines = []
 for i in range(0b11111):
@@ -12,13 +13,16 @@ class Tree:
     #  O
     #  OOOO
     #  O
-    def __init__(self, pattern, pieces, newPiece, sideToComplete):
+    def __init__(self, pattern, pieces, newPiece, sideToComplete, face=0):
         self.children = []
         self.availablePieces = pieces[:]
         self.pattern = pattern[:]
-        self.newPiece = newPiece.copy()
+        self.newPiece = newPiece
         self.sideToComplete = sideToComplete
-        self.pattern.append((newPiece, (sideToComplete-1)%4, newPiece.getFace()))
+        rotation = 1
+        if newPiece.getFace() == 0:
+            rotation = -1
+        self.pattern.append((newPiece, (sideToComplete+rotation)%4, newPiece.getFace()))
         self.availablePieces.remove(newPiece)
 
     def addChild(self, child):
@@ -30,9 +34,11 @@ class Tree:
         if len(self.pattern) < 4:
             compatibilities = self.findAllCompatibilities()
             for pieceIndex in compatibilities.keys():
-                for face in compatibilities[pieceIndex]:
-                    for side in face:
-                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4))
+                face = 0
+                for facing in compatibilities[pieceIndex]:
+                    for side in facing:
+                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4, face))
+                    face += 1
             for child in self.children:
                 child.iterate()
         # Validation nécessaire entre la première et la dernière pièce posée sur la ligne de 4
@@ -77,18 +83,18 @@ class Tree:
             line = ""
             for pieceData in self.pattern:
                 #print(bin(pieceData[0].getSides()[(pieceData[1]-1)%4]))
-                rotation = -1
+                rotation = 1
                 if pieceData[0].getFace() == 0:
-                    rotation = 1
+                    rotation = -1
                 val = format(pieceData[0].getSides()[(pieceData[1]+rotation)%4], "#07b")
                 if val[i+2] == '1':
                     line += '⬜'
                 else:
                     line += '⬛'
                 line += "⬜⬜⬜"
-                rotation = 1
+                rotation = -1
                 if pieceData[0].getFace() == 0:
-                    rotation = -1
+                    rotation = 1
                 val = pieceData[0].getSides()[(pieceData[1]+rotation)%4]
                 val = reverseBits(val, 5)
                 if val[i] == '1':
