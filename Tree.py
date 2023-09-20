@@ -52,6 +52,7 @@ class Tree:
             #     i += 1
             print(f"{self.pattern} => ")#{bin(upLine)}")
             self.drawPattern()
+            # reste à positionner les deux dernières pièces...
 
     def findAllCompatibilities(self):
         res = {}
