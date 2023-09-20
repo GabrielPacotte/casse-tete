@@ -17,5 +17,17 @@ allPieces = [
 ]
 availablePieces = allPieces.copy()
 
+#print(findAllCompatibilities(allPieces[0], 0))
+#allPieces[2].flip()
 root = Tree([], allPieces, allPieces[0], 0)
-root.iterate()                                                                                                                                      
+#root.pattern = [(allPieces[2], 0, 0)]
+#root.drawPattern()
+#print(allPieces[0].getEntireValue())
+root.iterate() 
+# 0b1101 1010 0101 00101                                                                                                                                  
+
+# ⬛⬛⬜⬛⬜ 
+# ⬛⬜⬜⬜⬜ 
+# ⬜⬜⬜⬜⬛ 
+# ⬛⬜⬜⬜⬜ 
+# ⬛⬛⬜⬛⬛
