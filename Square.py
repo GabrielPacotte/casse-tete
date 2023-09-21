@@ -13,9 +13,11 @@ class Square:
         self.sides.append([])
         self.sides[1].append(int(reverseBits(up, 5), 2))
         self.sides[1].append(int(reverseBits(left, 5), 2))
+        #self.sides[1].append(left)
         self.sides[1].append(int(reverseBits(down, 5), 2))
-        self.sides[1].append(int(reverseBits(right, 5), 2))
-        
+        self.sides[1].append(right)
+
+        #self.sides[1].append(int(reverseBits(right, 5), 2))
         # self.sides[1].append(int((bin(up)[2:])[::-1], 2))
         # self.sides[1].append(int((bin(left)[2:])[::-1], 2))
         # self.sides[1].append(int((bin(down)[2:])[::-1], 2))
@@ -30,6 +32,9 @@ class Square:
 
     def __copy__(self):
         return type(self)(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1], self.face)
+
+    def copy(self):
+        return Square(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][2],self.sides[0][3], 0)
 
     # def copy(self):
     #     return Square(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1], self.face)
@@ -66,6 +71,7 @@ class Square:
         other.flip()
         res.append([])
         res[1] = self.getFaceCompatibilities(orientation, other)
+        other.flip()
         return res
 
     def getFaceCompatibilities(self, orientation, other):
@@ -78,12 +84,23 @@ class Square:
         return res
 
     def areSidesCompatible(self, orientation, otherOrientation, other):
-        compatibilty = self.getSides()[orientation] & other.getSides()[otherOrientation]
-        b1_binVal = format(self.getSides()[orientation], "#07b")
-        b2_binVal = format(other.getSides()[otherOrientation], "#07b")
-        b1 = int(b1_binVal[3:6], 2)
-        b2 = int(b2_binVal[3:6], 2)
+        # a = self.getSides()[orientation]
+        # b = other.getSides()[otherOrientation]
+        # if a ^ b == 0b11111:
+        #     print("(", self, orientation, self.face, ")", "(", other, orientation, other.face, ")", bin(a), bin(b))
+        #     return True
+        # return False
+        b1_binVal = format(self.getSides()[orientation], "#07b")[2:]
+        b2_binVal = reverseBits(other.getSides()[otherOrientation], 5)
+        #b2_binVal = format(other.getSides()[otherOrientation], "#07b")[2:]
+        compatibilty = int(b1_binVal,2) & int(b2_binVal,2)
+        b1 = int(b1_binVal[1:4], 2)
+        b2 = int(b2_binVal[1:4], 2)
         fill = b1 ^ b2
         if compatibilty == 0 and fill == 0b111:
+            print(f"{self, orientation, self.face} = {b1_binVal}") 
+            print(f"{other, otherOrientation, other.face} = {b2_binVal, bin(other.getSides()[otherOrientation])[2:]} ")
+            print("compatibility = ", compatibilty)
+            print("fill = ", fill)
             return True
         return False

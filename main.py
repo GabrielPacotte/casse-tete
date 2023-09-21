@@ -10,8 +10,8 @@ allPieces = [
     Square(6, 0b01010, 0b00100, 0b01010, 0b00100)
 ]
 #print(findAllCompatibilities(allPieces[0], 0))
-#allPieces[2].flip()
-root = Tree([], allPieces, allPieces[0], 3)
+#p1.flip()
+root = Tree([], allPieces, allPieces[0], 3, 0)
 #root.pattern = [(allPieces[2], 0, 0)]
 root.iterate()
 #print(allPieces[0].getEntireValue())

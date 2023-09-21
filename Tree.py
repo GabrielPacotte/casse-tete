@@ -13,15 +13,14 @@ class Tree:
     #  O
     #  OOOO
     #  O
-    def __init__(self, pattern, pieces, newPiece, sideToComplete):
+    def __init__(self, pattern, pieces, newPiece, sideToComplete, face):
         self.children = []
         self.availablePieces = pieces[:]
         self.pattern = pattern[:]
-        self.newPiece = newPiece
+        self.newPiece = newPiece.copy()
+        self.newPiece.setFace(face)
         self.sideToComplete = sideToComplete
         rotation = -1
-        # if newPiece.getFace() == 0:
-        #     rotation = 1
         self.pattern.append((self.newPiece, (sideToComplete+rotation)%4, self.newPiece.getFace()))
         self.availablePieces.remove(newPiece)
 
@@ -33,14 +32,18 @@ class Tree:
         # create new tree nodes
         if len(self.pattern) < 4:
             compatibilities = self.findAllCompatibilities()
+            print(compatibilities)
             for pieceIndex in compatibilities.keys():
+                face = 0
                 for facing in compatibilities[pieceIndex]:
                     for side in facing:
-                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4))
+                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4, face))
+                    face  = 1
             for child in self.children:
                 child.iterate()
         # Validation nécessaire entre la première et la dernière pièce posée sur la ligne de 4
         elif self.isLaneValid():
+            # reste à positionner les deux dernières pièces...
             # upLine = self.pattern[0][0].getSides()[self.pattern[0][1]]
             # i = 1
             # while i < 4:
@@ -50,13 +53,14 @@ class Tree:
             #     i += 1
             print(f"{self.pattern} => ")#{bin(upLine)}")
             self.drawPattern()
-            # reste à positionner les deux dernières pièces...
+            
 
     def findAllCompatibilities(self):
         res = {}
         #self.newPiece.setFace(self.face)
         for pieceIndex in range(len(self.availablePieces)-1):
             piece = self.availablePieces[pieceIndex]
+            print(self.newPiece.getSides()[self.sideToComplete])
             res[pieceIndex] = self.newPiece.getCompatibilities(self.sideToComplete, piece)
         return res
 
@@ -68,12 +72,12 @@ class Tree:
         if self.pattern[0][2] == 1:
             p1_rotation = 1
         p4 = self.pattern[3][0]
-        p4.setFace(self.pattern[3][2])
+        #p4.setFace(self.pattern[3][2])
         p4_orientation = self.pattern[3][1]
         p2_rotation = 1
         if self.pattern[3][2] == 1:
             p2_rotation = -1
-        if p1.areSidesCompatible((p1_orientation+p1_rotation)%4, (p4_orientation+p2_rotation)%4, p4):
+        if p1.areSidesCompatible((p1_orientation+p1_rotation)%4, (p4_orientation-p2_rotation)%4, p4):
             return True
         else:
             return False
