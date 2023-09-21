@@ -1,21 +1,21 @@
 from Utility import reverseBits
 
 class Square:
-    def __init__(self, id, up, right, down, left):
+    def __init__(self, id, up, right, down, left, face=0):
         self.id = id
-        self.face = 0
+        self.face = face
         self.sides = []
         self.sides.append([])
         self.sides[0].append(up)
         self.sides[0].append(right)
         self.sides[0].append(down)
         self.sides[0].append(left)
-
         self.sides.append([])
         self.sides[1].append(int(reverseBits(up, 5), 2))
-        self.sides[1].append(int(reverseBits(right, 5), 2))
-        self.sides[1].append(int(reverseBits(down, 5), 2))
         self.sides[1].append(int(reverseBits(left, 5), 2))
+        self.sides[1].append(int(reverseBits(down, 5), 2))
+        self.sides[1].append(int(reverseBits(right, 5), 2))
+        
         # self.sides[1].append(int((bin(up)[2:])[::-1], 2))
         # self.sides[1].append(int((bin(left)[2:])[::-1], 2))
         # self.sides[1].append(int((bin(down)[2:])[::-1], 2))
@@ -29,20 +29,23 @@ class Square:
         return str(self.id)
 
     def __copy__(self):
-        return type(self)(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1])
+        return type(self)(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1], self.face)
+
+    # def copy(self):
+    #     return Square(self.id, self.sides[0][0],self.sides[0][1],self.sides[0][1],self.sides[0][1], self.face)
 
     def getId(self):
         return self.id
 
     # {} => {Retourne la pièce courante}
     def flip(self):
-        if self.face == 0:
-            self.face = 1
-        else:
-            self.face = 0
+        self.face = (self.face + 1) % 2
 
     def getFace(self):
         return self.face
+
+    def setFace(self, f):
+        self.face = f
 
     def getSides(self):
         return self.sides[self.face]
@@ -81,6 +84,6 @@ class Square:
         b1 = int(b1_binVal[3:6], 2)
         b2 = int(b2_binVal[3:6], 2)
         fill = b1 ^ b2
-        if compatibilty == 0 and fill == 0b111: # Peut-etre un pb ici => utiliser le xor pour la 2nd comp (voir compte-rendu)
+        if compatibilty == 0 and fill == 0b111:
             return True
         return False

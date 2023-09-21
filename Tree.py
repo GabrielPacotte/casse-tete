@@ -4,7 +4,7 @@ from copy import deepcopy
 
 lines = []
 for i in range(0b11111):
-    lines.append(format(i, "#07b")[2:].replace("0", "⬛").replace("1", "⬜"))
+    lines.append(format(i, "#07b")[2:].replace("0", "⬛").replace("1", "🟥"))
 
 class Tree:
     # pattern doit être de la forme:
@@ -13,16 +13,16 @@ class Tree:
     #  O
     #  OOOO
     #  O
-    def __init__(self, pattern, pieces, newPiece, sideToComplete, face=0):
+    def __init__(self, pattern, pieces, newPiece, sideToComplete):
         self.children = []
         self.availablePieces = pieces[:]
         self.pattern = pattern[:]
         self.newPiece = newPiece
         self.sideToComplete = sideToComplete
-        rotation = 1
-        if newPiece.getFace() == 0:
-            rotation = -1
-        self.pattern.append((newPiece, (sideToComplete+rotation)%4, newPiece.getFace()))
+        rotation = -1
+        # if newPiece.getFace() == 0:
+        #     rotation = 1
+        self.pattern.append((self.newPiece, (sideToComplete+rotation)%4, self.newPiece.getFace()))
         self.availablePieces.remove(newPiece)
 
     def addChild(self, child):
@@ -34,11 +34,9 @@ class Tree:
         if len(self.pattern) < 4:
             compatibilities = self.findAllCompatibilities()
             for pieceIndex in compatibilities.keys():
-                face = 0
                 for facing in compatibilities[pieceIndex]:
                     for side in facing:
-                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4, face))
-                    face += 1
+                        self.children.append(Tree(self.pattern, self.availablePieces, self.availablePieces[pieceIndex], (side+2)%4))
             for child in self.children:
                 child.iterate()
         # Validation nécessaire entre la première et la dernière pièce posée sur la ligne de 4
@@ -56,6 +54,7 @@ class Tree:
 
     def findAllCompatibilities(self):
         res = {}
+        #self.newPiece.setFace(self.face)
         for pieceIndex in range(len(self.availablePieces)-1):
             piece = self.availablePieces[pieceIndex]
             res[pieceIndex] = self.newPiece.getCompatibilities(self.sideToComplete, piece)
@@ -63,10 +62,18 @@ class Tree:
 
     def isLaneValid(self):
         p1 = self.pattern[0][0]
+        #p1.setFace(self.pattern[0][2])
         p1_orientation = self.pattern[0][1]
+        p1_rotation = -1
+        if self.pattern[0][2] == 1:
+            p1_rotation = 1
         p4 = self.pattern[3][0]
+        p4.setFace(self.pattern[3][2])
         p4_orientation = self.pattern[3][1]
-        if p1.areSidesCompatible((p1_orientation-1)%4, (p4_orientation+1)%4, p4):
+        p2_rotation = 1
+        if self.pattern[3][2] == 1:
+            p2_rotation = -1
+        if p1.areSidesCompatible((p1_orientation+p1_rotation)%4, (p4_orientation+p2_rotation)%4, p4):
             return True
         else:
             return False
@@ -75,6 +82,7 @@ class Tree:
         # Upper Line
         line = ""
         for pieceData in self.pattern:
+            pieceData[0].setFace(pieceData[2])
             line += lines[pieceData[0].getSides()[pieceData[1]]] + " "
         print(line)
         # Middle lines
@@ -84,22 +92,16 @@ class Tree:
             line = ""
             for pieceData in self.pattern:
                 #print(bin(pieceData[0].getSides()[(pieceData[1]-1)%4]))
-                rotation = 1
-                if pieceData[0].getFace() == 0:
-                    rotation = -1
-                val = format(pieceData[0].getSides()[(pieceData[1]+rotation)%4], "#07b")
-                if val[i+2] == '1':
-                    line += '⬜'
+                val = format(pieceData[0].getSides()[(pieceData[1]-1)%4], "#07b")[2:]
+                if val[i] == '1':
+                    line += '🟥'
                 else:
                     line += '⬛'
-                line += "⬜⬜⬜"
-                rotation = -1
-                if pieceData[0].getFace() == 0:
-                    rotation = 1
-                val = pieceData[0].getSides()[(pieceData[1]+rotation)%4]
+                line += "🟥🟥🟥"
+                val = pieceData[0].getSides()[(pieceData[1]+1)%4]
                 val = reverseBits(val, 5)
                 if val[i] == '1':
-                    line += '⬜ '
+                    line += '🟥 '
                 else:
                     line += '⬛ '
             print(line)
