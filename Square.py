@@ -90,9 +90,9 @@ class Square:
         #     print("(", self, orientation, self.face, ")", "(", other, orientation, other.face, ")", bin(a), bin(b))
         #     return True
         # return False
-        b1_binVal = format(self.getSides()[orientation], "#07b")[2:]
-        b2_binVal = reverseBits(other.getSides()[otherOrientation], 5)
-        #b2_binVal = format(other.getSides()[otherOrientation], "#07b")[2:]
+        #b1_binVal = format(self.getSides()[orientation], "#07b")[2:]
+        b1_binVal = reverseBits(self.getSides()[orientation], 5)
+        b2_binVal = format(other.getSides()[otherOrientation], "#07b")[2:]
         compatibilty = int(b1_binVal,2) & int(b2_binVal,2)
         b1 = int(b1_binVal[1:4], 2)
         b2 = int(b2_binVal[1:4], 2)

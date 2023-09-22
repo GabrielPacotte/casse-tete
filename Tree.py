@@ -77,7 +77,7 @@ class Tree:
         p2_rotation = 1
         if self.pattern[3][2] == 1:
             p2_rotation = -1
-        if p1.areSidesCompatible((p1_orientation+p1_rotation)%4, (p4_orientation-p2_rotation)%4, p4):
+        if p1.areSidesCompatible((p1_orientation+p1_rotation)%4, (self.sideToComplete)%4, p4):
             return True
         else:
             return False
